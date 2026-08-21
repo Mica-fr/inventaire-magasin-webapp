@@ -331,7 +331,7 @@ async function renderHome(isStale = () => false) {
 function cardInventoryHtml(inv) {
   const estCloture = inv.statut === "CLOTURE";
   return `
-    <div class="card" data-open="${inv.id}" style="cursor:pointer;">
+    <div class="card">
       <div class="card-row">
         <span class="card-title">${escapeHtml(inv.numero)}</span>
         <span class="badge ${estCloture ? "cloture" : "en-cours"}">${estCloture ? "Clôturé" : "En cours"}</span>
@@ -339,8 +339,11 @@ function cardInventoryHtml(inv) {
       <p class="card-sub">${escapeHtml(inv.magasin)} — ${escapeHtml(inv.zone)}</p>
       <p class="card-sub">Site : ${escapeHtml(inv.site)}</p>
       <p class="card-sub">${toUiDate(inv.dateInventaire)} · ${escapeHtml(inv.operateur)}</p>
-      <div class="card-actions">
-        ${estCloture ? "" : `<button class="icon-btn" data-edit="${inv.id}" title="Modifier">✏️</button>`}
+      <button class="big-btn" data-open="${inv.id}" style="margin-top:10px;">
+        📋 ${estCloture ? "Consulter les lignes" : "Ouvrir / Ajouter des pièces"}
+      </button>
+      <div class="card-actions" style="margin-top:8px;">
+        ${estCloture ? "" : `<button class="icon-btn" data-edit="${inv.id}" title="Modifier le magasin/site/zone/date/opérateur">✏️</button>`}
         <button class="icon-btn" data-delete="${inv.id}" title="Supprimer">🗑️</button>
       </div>
     </div>
@@ -410,11 +413,17 @@ async function renderInventoryForm({ id }, isStale = () => false) {
       if (existing) {
         await updateInventory({ ...existing, ...data });
         showToast("Inventaire mis à jour.");
+        goBack();
       } else {
-        await createInventory(data);
-        showToast("Inventaire créé.");
+        const created = await createInventory(data);
+        showToast("Inventaire créé — ajoutez vos premières lignes.");
+        // On enchaîne directement sur le détail de l'inventaire qui vient
+        // d'être créé (plutôt que de revenir à la liste) : sans ça,
+        // l'utilisateur doit deviner qu'il faut re-taper sur la carte pour
+        // trouver le bouton "Ajouter une ligne" — source de confusion
+        // observée ("je ne trouve pas où saisir les pièces").
+        navigate("inventoryDetail", { id: created.id }, { replace: true });
       }
-      goBack();
     } catch (err) {
       showToast("Erreur : " + err.message);
     }
