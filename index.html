@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="clair">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Inventaire Magasin</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header id="app-header">
+    <button id="btn-back" class="icon-btn" hidden aria-label="Retour">←</button>
+    <h1 id="app-title">Inventaire Magasin</h1>
+    <button id="btn-theme" class="icon-btn" aria-label="Changer de thème">🌙</button>
+  </header>
+
+  <main id="app-root"></main>
+
+  <div id="toast" class="toast" hidden></div>
+
+  <!-- Zone caméra pour le scan (masquée hors usage) -->
+  <div id="scan-overlay" class="scan-overlay" hidden>
+    <video id="scan-video" playsinline autoplay muted></video>
+    <div class="scan-frame"></div>
+    <div class="scan-controls">
+      <p id="scan-status">Visez un code-barres ou un QR code…</p>
+      <button id="btn-scan-manual" class="big-btn outline">Saisie manuelle</button>
+      <button id="btn-scan-close" class="big-btn danger">Fermer le scan</button>
+    </div>
+  </div>
+
+  <script src="db.js"></script>
+  <script src="xlsx.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
